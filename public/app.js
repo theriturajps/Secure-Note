@@ -1,9 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
   // DOM Elements (existing)
-  const currentPassword = document.getElementById('current-password');
-  const newPassword = document.getElementById('new-password');
-  const changePasswordBtn = document.getElementById('change-password-btn');
-
   const createTab = document.getElementById('create-tab');
   const retrieveTab = document.getElementById('retrieve-tab');
   const createForm = document.getElementById('create-note-form');
@@ -47,12 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Modal Controls
-  closeModal.addEventListener('click', () => {
-    modal.classList.add('hidden');
-    newPassword.classList.add('hidden');
-    newPassword.value = '';
-    changePasswordBtn.innerHTML = '<i class="fas fa-key mr-1"></i> Change Password';
-  });
+  closeModal.addEventListener('click', () => modal.classList.add('hidden'));
 
 
   // Add new feedback elements for each section
@@ -146,34 +137,27 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Update event listeners to use specific feedback locations
-  retrieveForm.addEventListener('submit', async (e) => {
+  createForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const noteId = document.getElementById('note-id').value.trim();
-    const password = document.getElementById('retrieve-password').value.trim();
+    const content = document.getElementById('note-content').value.trim();
+    const password = document.getElementById('note-password').value.trim();
 
     try {
-      const response = await fetch('/api/notes/retrieve', {
+      const response = await fetch('/api/notes/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ noteId, password })
+        body: JSON.stringify({ content, password })
       });
       const result = await response.json();
 
       if (response.ok) {
-        noteContent.value = result.content;
-        noteContent.setAttribute('data-note-id', noteId);
-        currentPassword.value = password; // Set the current password
-        noteContent.readOnly = true;
-        currentPassword.readOnly = true;
-        editBtn.classList.remove('hidden');
-        saveBtn.classList.add('hidden');
-        newPassword.classList.add('hidden');
-        modal.classList.remove('hidden');
+        showFeedback(`Note created! ID: ${result.noteId}`, 'success', 'create');
+        createForm.reset();
       } else {
-        showFeedback(result.error || 'Failed to retrieve note', 'error', 'retrieve');
+        showFeedback(result.error || 'Failed to create note', 'error', 'create');
       }
     } catch (error) {
-      showFeedback('Network error occurred', 'error', 'retrieve');
+      showFeedback('Network error occurred', 'error', 'create');
     }
   });
 
@@ -202,50 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (error) {
       showFeedback('Network error occurred', 'error', 'retrieve');
-    }
-  });
-
-  changePasswordBtn.addEventListener('click', async () => {
-    if (newPassword.classList.contains('hidden')) {
-
-      newPassword.classList.remove('hidden');
-      changePasswordBtn.innerHTML = '<i class="fas fa-check mr-1"></i> Save Pass';
-      showFeedback('Enter new password', 'info', 'modal');
-    } else {
-
-      const newPass = newPassword.value.trim();
-      if (!newPass) {
-        showFeedback('New password cannot be empty', 'error', 'modal');
-        return;
-      }
-
-      const noteId = noteContent.getAttribute('data-note-id');
-      const currentPass = currentPassword.value.trim();
-
-      try {
-        const response = await fetch('/api/notes/update-password', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            noteId,
-            currentPassword: currentPass,
-            newPassword: newPass
-          })
-        });
-        const result = await response.json();
-
-        if (response.ok) {
-          showFeedback('Password updated successfully', 'success', 'modal');
-          currentPassword.value = newPass;
-          newPassword.value = '';
-          newPassword.classList.add('hidden');
-          changePasswordBtn.innerHTML = '<i class="fas fa-key mr-1"></i> Edit Pass';
-        } else {
-          showFeedback(result.error || 'Failed to update password', 'error', 'modal');
-        }
-      } catch (error) {
-        showFeedback('Network error occurred', 'error', 'modal');
-      }
     }
   });
 
@@ -316,12 +256,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Close modal when clicking outside
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
       modal.classList.add('hidden');
-      newPassword.classList.add('hidden');
-      newPassword.value = '';
-      changePasswordBtn.innerHTML = '<i class="fas fa-key mr-1"></i> Change Pass';
     }
   });
 

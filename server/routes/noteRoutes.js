@@ -136,46 +136,4 @@ router.delete('/delete', async (req, res) => {
   }
 })
 
-router.put('/update-password', async (req, res) => {
-  try {
-    const { noteId, currentPassword, newPassword } = req.body;
-
-    if (!newPassword) {
-      return res.status(400).json({
-        error: 'New password cannot be empty',
-      });
-    }
-
-    // Find the note
-    const note = await Note.findById(noteId);
-
-    if (!note) {
-      return res.status(404).json({
-        error: 'Note not found',
-      });
-    }
-
-    // Verify current password
-    const isMatch = await note.comparePassword(currentPassword);
-    if (!isMatch) {
-      return res.status(401).json({
-        error: 'Incorrect password',
-      });
-    }
-
-    // Update password
-    note.password = newPassword;
-    await note.save();
-
-    res.json({
-      message: 'Password updated successfully',
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: 'Failed to update password',
-      details: error.message,
-    });
-  }
-});
-
 module.exports = router
