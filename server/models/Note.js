@@ -1,12 +1,11 @@
 const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
 
 const NoteSchema = new mongoose.Schema({
   content: {
     type: String,
     required: true,
   },
-  passwordHash: {
+  password: {
     type: String,
     required: true,
   },
@@ -16,19 +15,14 @@ const NoteSchema = new mongoose.Schema({
   },
 })
 
-// Method to check password
 NoteSchema.methods.comparePassword = async function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.passwordHash)
+  return this.password === candidatePassword;
 }
 
-// Static method to create a new note with hashed password
 NoteSchema.statics.createNote = async function (content, password) {
-  const saltRounds = 10
-  const passwordHash = await bcrypt.hash(password, saltRounds)
-
   return this.create({
     content,
-    passwordHash,
+    password,
   })
 }
 
