@@ -11,6 +11,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveBtn = document.getElementById('save-note-btn');
   const deleteBtn = document.getElementById('delete-note-btn');
   const feedback = document.getElementById('feedback');
+  const themeToggle = document.getElementById('theme-toggle');
+
+  // Theme Handling
+  const htmlElement = document.documentElement;
+
+  // Check for saved theme preference
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    htmlElement.classList.toggle('dark', savedTheme === 'dark');
+  }
+
+  themeToggle.addEventListener('click', () => {
+    htmlElement.classList.toggle('dark');
+    localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
+  });
 
   // Tab Switching
   createTab.addEventListener('click', () => {
@@ -33,10 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Feedback Handler
   function showFeedback(message, isError = false) {
     feedback.innerHTML = `
-            <div class="p-2 rounded-md ${isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
-                <p class="text-sm"><i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-1"></i>${message}</p>
-            </div>
-        `;
+      <div class="p-2 rounded-md ${isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+        <p class="text-sm"><i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-1"></i>${message}</p>
+      </div>
+    `;
     setTimeout(() => feedback.innerHTML = '', 5000);
   }
 
