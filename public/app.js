@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           feedbackDiv.addEventListener('remove', () => clearTimeout(removeTimeout));
         }
-      }, 4500);
+      }, 400500);
 
       feedbackDiv.addEventListener('remove', () => clearTimeout(fadeOutTimeout));
     }
@@ -170,10 +170,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const successMessage = `
           <div class="mb-2">Note ID: ${result.noteId}</div>
-          <div class="flex items-center space-x-2">
-            <input type="text" value="${shareableLink}" class="flex-1 p-1 text-sm border rounded dark:bg-gray-700" readonly>
-            <button onclick="navigator.clipboard.writeText('${shareableLink}')" class="p-1 text-sm bg-gray-100 rounded hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"><i class="fas fa-copy"></i></button>
-          </div>`;
+          <div class="flex items-center ml-0 -mr-12">
+            <input type="text" value="${shareableLink}" class="min-w-0 flex-1 p-1 text-sm border rounded dark:bg-gray-700 mr-2" readonly>
+            <button onclick="navigator.clipboard.writeText('${shareableLink}')" class="flex-none p-1 text-sm bg-gray-100 rounded hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"><i class="fas fa-copy"></i></button>
+          </div>
+        `;
 
         showFeedback(successMessage, 'success', 'create');
         createForm.reset();
