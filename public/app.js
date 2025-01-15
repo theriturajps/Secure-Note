@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // DOM Elements (existing)
+  // DOM Elements
   const createTab = document.getElementById('create-tab');
   const retrieveTab = document.getElementById('retrieve-tab');
   const createForm = document.getElementById('create-note-form');
@@ -11,12 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveBtn = document.getElementById('save-note-btn');
   const deleteBtn = document.getElementById('delete-note-btn');
   const themeToggle = document.getElementById('theme-toggle');
-  const year = document.getElementById('year')
+  const year = document.getElementById('year');
 
   // Theme Handling
   const htmlElement = document.documentElement;
-
-  // Check for saved theme preference
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme) {
     htmlElement.classList.toggle('dark', savedTheme === 'dark');
@@ -27,26 +25,41 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
   });
 
-  // Tab Switching
-  createTab.addEventListener('click', () => {
-    createTab.classList.add('text-gray-500', 'border-b-2', 'border-blue-600');
-    retrieveTab.classList.remove('border-b-2', 'border-blue-600');
-    createForm.classList.remove('hidden');
-    retrieveForm.classList.add('hidden');
+  // Mobile Tab Switching
+  function handleMobileTabSwitch() {
+    if (window.innerWidth < 768) {
+      createTab.addEventListener('click', () => {
+        createTab.classList.add('text-gray-500', 'border-b-2', 'border-blue-600');
+        retrieveTab.classList.remove('border-b-2', 'border-blue-600');
+        createForm.classList.remove('hidden');
+        retrieveForm.classList.add('hidden');
+      });
+
+      retrieveTab.addEventListener('click', () => {
+        retrieveTab.classList.add('text-gray-500', 'border-b-2', 'border-blue-600');
+        createTab.classList.remove('border-b-2', 'border-blue-600');
+        retrieveForm.classList.remove('hidden');
+        createForm.classList.add('hidden');
+      });
+    }
+  }
+
+  // Initial call for mobile tab handling
+  handleMobileTabSwitch();
+
+  // Handle resize events
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 768) {
+      createForm.classList.remove('hidden');
+      retrieveForm.classList.remove('hidden');
+    } else {
+      handleMobileTabSwitch();
+      // Reset to default view on mobile
+      createTab.click();
+    }
   });
 
-  retrieveTab.addEventListener('click', () => {
-    retrieveTab.classList.add('text-gray-500', 'border-b-2', 'border-blue-600');
-    createTab.classList.remove('border-b-2', 'border-blue-600');
-    retrieveForm.classList.remove('hidden');
-    createForm.classList.add('hidden');
-  });
-
-  // Modal Controls
-  closeModal.addEventListener('click', () => modal.classList.add('hidden'));
-
-
-  // Add new feedback elements for each section
+  // Add feedback elements
   const createFeedback = document.createElement('div');
   createFeedback.id = 'create-feedback';
   createFeedback.className = 'mt-2';
@@ -60,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalFeedback = document.createElement('div');
   modalFeedback.id = 'modal-feedback';
   modalFeedback.className = 'mt-1 mb-1';
-  modal.querySelector('.p-3').insertBefore(modalFeedback, modal.querySelector('.flex.space-x-2'));
+  modal.querySelector('.p-3').insertBefore(modalFeedback, modal.querySelector('.flex.gap-2'));
 
   // Enhanced Feedback Handler
   function showFeedback(message, type = 'info', location = 'create') {
@@ -73,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedbackElement = feedbackElements[location];
     if (!feedbackElement) return;
 
-    // Clear any existing feedback first
     feedbackElement.innerHTML = '';
 
     const feedbackStyles = {
@@ -101,42 +113,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const style = feedbackStyles[type] || feedbackStyles.info;
 
-    // Create the feedback div
     const feedbackDiv = document.createElement('div');
     feedbackDiv.className = `p-3 rounded-md ${style.bg} flex items-center space-x-2 animate-fadeIn`;
     feedbackDiv.style.opacity = '1';
     feedbackDiv.style.transition = 'opacity 0.5s ease-out';
 
     feedbackDiv.innerHTML = `
-    <i class="fas ${style.icon} ${style.text}"></i>
-    <p class="text-sm ${style.text}">${message}</p>
-  `;
+      <i class="fas ${style.icon} ${style.text}"></i>
+      <p class="text-sm ${style.text}">${message}</p>
+    `;
 
-    // Append the feedback div
     feedbackElement.appendChild(feedbackDiv);
 
-    // Set up the fade out
     const fadeOutTimeout = setTimeout(() => {
       if (feedbackDiv && feedbackDiv.parentNode === feedbackElement) {
         feedbackDiv.style.opacity = '0';
-
-        // Remove the element after transition
         const removeTimeout = setTimeout(() => {
           if (feedbackDiv && feedbackDiv.parentNode === feedbackElement) {
             feedbackElement.removeChild(feedbackDiv);
           }
         }, 500);
-
-        // Cleanup timeout if element is removed early
         feedbackDiv.addEventListener('remove', () => clearTimeout(removeTimeout));
       }
     }, 4500);
 
-    // Cleanup timeout if element is removed early
     feedbackDiv.addEventListener('remove', () => clearTimeout(fadeOutTimeout));
   }
 
-  // Update event listeners to use specific feedback locations
+  // Form Handlers
   createForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const content = document.getElementById('note-content').value.trim();
@@ -256,6 +260,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Modal Controls
+  closeModal.addEventListener('click', () => modal.classList.add('hidden'));
+
   // Close modal when clicking outside
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
@@ -270,10 +277,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Set copyright year
   function getYear() {
-    const currentYear = new Date().getFullYear()
-    return currentYear
+    const currentYear = new Date().getFullYear();
+    return currentYear;
   }
 
-  year.innerHTML = getYear()
+  year.innerHTML = getYear();
 });
