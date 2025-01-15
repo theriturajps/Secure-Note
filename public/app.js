@@ -1,4 +1,100 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Create main container
+  const container = document.querySelector('.container');
+
+  const header = document.createElement('header');
+  header.className = 'flex justify-between items-center mb-4';
+  header.innerHTML = `
+    <h1 class="text-xl font-bold text-blue-600">SecureNote</h1>
+    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200">
+      <i class="fas fa-sun dark:hidden"></i>
+      <i class="fas fa-moon hidden dark:inline"></i>
+    </button>
+  `;
+  container.appendChild(header);
+
+  const mainCard = document.createElement('div');
+  mainCard.className = 'bg-white rounded-lg shadow-md p-3';
+
+  const tabs = document.createElement('div');
+  tabs.className = 'flex mb-3 border-b border-gray-200';
+  tabs.innerHTML = `
+    <button id="create-tab" class="flex-1 py-1.5 px-3 text-sm font-medium text-gray-500 border-b-2 border-blue-600">
+      <i class="fas fa-plus-circle mr-1"></i> Create
+    </button>
+    <button id="retrieve-tab" class="flex-1 py-1.5 px-3 text-sm font-medium text-gray-500">
+      <i class="fas fa-search mr-1"></i> Retrieve
+    </button>
+  `;
+  mainCard.appendChild(tabs);
+
+  const createForm = document.createElement('form');
+  createForm.id = 'create-note-form';
+  createForm.className = 'space-y-2';
+  createForm.innerHTML = `
+    <textarea id="note-content" class="w-full h-20 p-2 border rounded-md resize-none"
+      placeholder="Enter your note..." required></textarea>
+    <input type="password" id="note-password" class="w-full p-2 border rounded-md" placeholder="Password" required>
+    <button type="submit" class="w-full py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+      <i class="fas fa-lock mr-1"></i> Create Secure Note
+    </button>
+  `;
+
+  const retrieveForm = document.createElement('form');
+  retrieveForm.id = 'retrieve-note-form';
+  retrieveForm.className = 'hidden space-y-2';
+  retrieveForm.innerHTML = `
+    <input type="text" id="note-id" class="w-full p-2 border rounded-md" placeholder="Note ID" required>
+    <input type="password" id="retrieve-password" class="w-full p-2 border rounded-md" placeholder="Password" required>
+    <button type="submit" class="w-full py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700">
+      <i class="fas fa-unlock mr-1"></i> Retrieve Note
+    </button>
+  `;
+
+  mainCard.appendChild(createForm);
+  mainCard.appendChild(retrieveForm);
+  container.appendChild(mainCard);
+
+  const modal = document.createElement('div');
+  modal.id = 'noteModal';
+  modal.className = 'hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4';
+  modal.innerHTML = `
+    <div class="bg-white rounded-lg w-full max-w-sm">
+      <div class="p-3">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-lg font-medium">Your Note</h3>
+          <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <textarea id="retrieved-note-content" class="w-full h-28 p-2 border rounded-md resize-none" readonly></textarea>
+        <div class="flex gap-2">
+          <button id="edit-note-btn" class="flex-1 py-1.5 px-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 w-20">
+            <i class="fas fa-edit mr-1"></i> Edit
+          </button>
+          <button id="save-note-btn" class="hidden flex-1 py-1.5 px-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 w-20">
+            <i class="fas fa-save mr-1"></i> Save
+          </button>
+          <button id="delete-note-btn" class="flex-1 py-1.5 px-3 bg-red-600 text-white rounded-md hover:bg-red-700 w-20">
+            <i class="fas fa-trash-alt mr-1"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  const footer = document.createElement('footer');
+  footer.className = 'text-center py-3 text-sm text-gray-500';
+  footer.innerHTML = `
+    <p>&copy; <span id="year"></span> SecureNote. All rights reserved.</p>
+  `;
+  document.body.appendChild(footer);
+
+  initializeApp();
+});
+
+function initializeApp() {
   // DOM Elements (existing)
   const createTab = document.getElementById('create-tab');
   const retrieveTab = document.getElementById('retrieve-tab');
@@ -276,4 +372,4 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   year.innerHTML = getYear()
-});
+};
