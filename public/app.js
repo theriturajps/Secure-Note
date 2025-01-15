@@ -62,6 +62,22 @@ document.addEventListener('DOMContentLoaded', () => {
   modalFeedback.className = 'mt-1 mb-1';
   modal.querySelector('.p-3').insertBefore(modalFeedback, modal.querySelector('.flex.space-x-2'));
 
+  function handleUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const noteId = urlParams.get('noteId');
+    const password = urlParams.get('password');
+
+    if (noteId && password) {
+      retrieveTab.click();
+      document.getElementById('note-id').value = noteId;
+      document.getElementById('retrieve-password').value = password;
+      window.history.replaceState({}, '', window.location.pathname);
+      retrieveForm.dispatchEvent(new Event('submit'));
+    }
+  }
+
+  handleUrlParams();
+
   // Enhanced Feedback Handler
   function showFeedback(message, type = 'info', location = 'create') {
     const feedbackElements = {
@@ -73,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedbackElement = feedbackElements[location];
     if (!feedbackElement) return;
 
-    // Clear any existing feedback first
     feedbackElement.innerHTML = '';
 
     const feedbackStyles = {
@@ -103,40 +118,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Create the feedback div
     const feedbackDiv = document.createElement('div');
-    feedbackDiv.className = `p-3 rounded-md ${style.bg} flex items-center space-x-2 animate-fadeIn`;
+    feedbackDiv.className = `p-3 rounded-md ${style.bg} flex flex-col space-y-2 animate-fadeIn`;
     feedbackDiv.style.opacity = '1';
     feedbackDiv.style.transition = 'opacity 0.5s ease-out';
 
+    // Allow HTML content in the message
     feedbackDiv.innerHTML = `
-    <i class="fas ${style.icon} ${style.text}"></i>
-    <p class="text-sm ${style.text}">${message}</p>
+    <div class="flex items-center space-x-2">
+      <i class="fas ${style.icon} ${style.text}"></i>
+      <div class="text-sm ${style.text}">${message}</div>
+    </div>
   `;
 
     // Append the feedback div
     feedbackElement.appendChild(feedbackDiv);
 
-    // Set up the fade out
-    const fadeOutTimeout = setTimeout(() => {
-      if (feedbackDiv && feedbackDiv.parentNode === feedbackElement) {
-        feedbackDiv.style.opacity = '0';
+    // Only set up fade out for non-success messages or messages without links
+    if (type !== 'success' || !message.includes('shareableLink')) {
+      const fadeOutTimeout = setTimeout(() => {
+        if (feedbackDiv && feedbackDiv.parentNode === feedbackElement) {
+          feedbackDiv.style.opacity = '0';
 
-        // Remove the element after transition
-        const removeTimeout = setTimeout(() => {
-          if (feedbackDiv && feedbackDiv.parentNode === feedbackElement) {
-            feedbackElement.removeChild(feedbackDiv);
-          }
-        }, 500);
+          const removeTimeout = setTimeout(() => {
+            if (feedbackDiv && feedbackDiv.parentNode === feedbackElement) {
+              feedbackElement.removeChild(feedbackDiv);
+            }
+          }, 500);
 
-        // Cleanup timeout if element is removed early
-        feedbackDiv.addEventListener('remove', () => clearTimeout(removeTimeout));
-      }
-    }, 4500);
+          feedbackDiv.addEventListener('remove', () => clearTimeout(removeTimeout));
+        }
+      }, 4500);
 
-    // Cleanup timeout if element is removed early
-    feedbackDiv.addEventListener('remove', () => clearTimeout(fadeOutTimeout));
+      feedbackDiv.addEventListener('remove', () => clearTimeout(fadeOutTimeout));
+    }
   }
 
-  // Update event listeners to use specific feedback locations
   createForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const content = document.getElementById('note-content').value.trim();
@@ -151,7 +167,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await response.json();
 
       if (response.ok) {
-        showFeedback(`Note created! ID: ${result.noteId}`, 'success', 'create');
+        const shareableLink = `${window.location.origin}?noteId=${result.noteId}&password=${password}`;
+
+        const successMessage = `
+          <div class="mb-2">Note ID: ${result.noteId}</div>
+          <div class="flex items-center space-x-2">
+            <input type="text" value="${shareableLink}" class="flex-1 p-1 text-sm border rounded dark:bg-gray-700" readonly>
+            <button onclick="navigator.clipboard.writeText('${shareableLink}')" class="p-1 text-sm bg-gray-100 rounded hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"><i class="fas fa-copy"></i></button>
+          </div>`;
+
+        showFeedback(successMessage, 'success', 'create');
         createForm.reset();
       } else {
         showFeedback(result.error || 'Failed to create note', 'error', 'create');
