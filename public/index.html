@@ -4,120 +4,89 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>SecureNote - Private Note Sharing</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="styles.css">
+	<title>SecureNote</title>
+	<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
-<body>
-	<div class="container-fluid vh-100 d-flex flex-column">
-		<header class="bg-primary text-white text-center py-3">
-			<h1 class="display-6">SecureNote</h1>
-			<p class="lead">Create, Secure, and Share Your Notes Privately</p>
+<body class="bg-gray-100 min-h-screen">
+	<div class="container mx-auto px-4 py-8 max-w-md">
+		<!-- Header -->
+		<header class="text-center mb-6">
+			<h1 class="text-2xl font-bold text-blue-600">SecureNote</h1>
 		</header>
 
-		<main class="flex-grow-1 d-flex align-items-center justify-content-center">
-			<div class="card shadow-lg" style="width: 100%; max-width: 500px;">
-				<div class="card-body">
-					<!-- Navigation Tabs -->
-					<ul class="nav nav-pills nav-fill mb-4" id="noteTab" role="tablist">
-						<li class="nav-item" role="presentation">
-							<button class="nav-link active" id="create-tab" data-bs-toggle="tab" data-bs-target="#create-section"
-								type="button" role="tab">
-								Create Note
-							</button>
-						</li>
-						<li class="nav-item" role="presentation">
-							<button class="nav-link" id="retrieve-tab" data-bs-toggle="tab" data-bs-target="#retrieve-section"
-								type="button" role="tab">
-								Retrieve Note
-							</button>
-						</li>
-					</ul>
-
-					<!-- Tab Content -->
-					<div class="tab-content" id="noteTabContent">
-						<!-- Create Note Section -->
-						<div class="tab-pane fade show active" id="create-section" role="tabpanel">
-							<h3 class="mb-4 text-center">Create a New Secure Note</h3>
-							<form id="create-note-form">
-								<div class="mb-3">
-									<textarea class="form-control" id="note-content" placeholder="Enter your confidential note..."
-										rows="5" required></textarea>
-								</div>
-								<div class="mb-3">
-									<input type="password" class="form-control" id="note-password" placeholder="Set a strong password"
-										required>
-								</div>
-								<div class="d-grid">
-									<button type="submit" class="btn btn-primary">
-										Create Secure Note
-									</button>
-								</div>
-							</form>
-						</div>
-
-						<!-- Retrieve Note Section -->
-						<div class="tab-pane fade" id="retrieve-section" role="tabpanel">
-							<h3 class="mb-4 text-center">Retrieve Your Note</h3>
-							<form id="retrieve-note-form">
-								<div class="mb-3">
-									<input type="text" class="form-control" id="note-id" placeholder="Enter Note ID" required>
-								</div>
-								<div class="mb-3">
-									<input type="password" class="form-control" id="retrieve-password" placeholder="Enter your password"
-										required>
-								</div>
-								<div class="d-grid">
-									<button type="submit" class="btn btn-success">
-										Retrieve Note
-									</button>
-								</div>
-							</form>
-						</div>
-					</div>
-
-					<!-- Note Display Modal -->
-					<div class="modal fade" id="noteDisplayModal" tabindex="-1">
-						<div class="modal-dialog modal-dialog-centered">
-							<div class="modal-content">
-								<div class="modal-header">
-									<h5 class="modal-title">Your Secure Note</h5>
-									<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-								</div>
-								<div class="modal-body">
-									<textarea class="form-control" id="retrieved-note-content" rows="6" readonly></textarea>
-								</div>
-								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" id="edit-note-btn">
-										Edit Note
-									</button>
-									<button type="button" class="btn btn-danger" id="delete-note-btn">
-										Delete Note
-									</button>
-									<button type="button" class="btn btn-primary d-none" id="save-note-btn">
-										Save Changes
-									</button>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Feedback Area -->
-					<div id="feedback" class="mt-3"></div>
-				</div>
+		<!-- Main Card -->
+		<div class="bg-white rounded-lg shadow-md p-4">
+			<!-- Tabs -->
+			<div class="flex mb-4 border-b">
+				<button id="create-tab" class="flex-1 py-2 px-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600">
+					<i class="fas fa-plus-circle mr-1"></i> Create
+				</button>
+				<button id="retrieve-tab" class="flex-1 py-2 px-4 text-sm font-medium text-gray-500">
+					<i class="fas fa-search mr-1"></i> Retrieve
+				</button>
 			</div>
-		</main>
 
-		<footer class="bg-light text-center py-2">
-			<p class="text-muted mb-0">
-				&copy; 2024 SecureNote | Protect Your Thoughts
-			</p>
-		</footer>
+			<!-- Create Form -->
+			<form id="create-note-form" class="space-y-3">
+				<textarea id="note-content"
+					class="w-full h-24 p-2 border rounded-md resize-none focus:ring-blue-500 focus:border-blue-500"
+					placeholder="Enter your note..." required></textarea>
+				<input type="password" id="note-password"
+					class="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Password"
+					required>
+				<button type="submit" class="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+					<i class="fas fa-lock mr-1"></i> Create Secure Note
+				</button>
+			</form>
+
+			<!-- Retrieve Form -->
+			<form id="retrieve-note-form" class="hidden space-y-3">
+				<input type="text" id="note-id" class="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+					placeholder="Note ID" required>
+				<input type="password" id="retrieve-password"
+					class="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Password"
+					required>
+				<button type="submit"
+					class="w-full py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+					<i class="fas fa-unlock mr-1"></i> Retrieve Note
+				</button>
+			</form>
+
+			<!-- Feedback Area -->
+			<div id="feedback" class="mt-3"></div>
+		</div>
 	</div>
 
-	<!-- Bootstrap JS and Popper -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- Note Modal -->
+	<div id="noteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+		<div class="bg-white rounded-lg w-full max-w-md">
+			<div class="p-4">
+				<div class="flex justify-between items-center mb-4">
+					<h3 class="text-lg font-medium">Your Note</h3>
+					<button id="close-modal" class="text-gray-500 hover:text-gray-700">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+				<textarea id="retrieved-note-content" class="w-full h-32 p-2 border rounded-md resize-none mb-4"
+					readonly></textarea>
+				<div class="flex space-x-2">
+					<button id="edit-note-btn" class="flex-1 py-2 px-4 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+						<i class="fas fa-edit mr-1"></i> Edit
+					</button>
+					<button id="save-note-btn"
+						class="hidden flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+						<i class="fas fa-save mr-1"></i> Save
+					</button>
+					<button id="delete-note-btn" class="flex-1 py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700">
+						<i class="fas fa-trash-alt mr-1"></i> Delete
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<script src="app.js"></script>
 </body>
 
