@@ -29,15 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Tab Switching
   createTab.addEventListener('click', () => {
-    createTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
-    retrieveTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+    createTab.classList.add('text-gray-500', 'border-b-2', 'border-blue-600');
+    retrieveTab.classList.remove('border-b-2', 'border-blue-600');
     createForm.classList.remove('hidden');
     retrieveForm.classList.add('hidden');
   });
 
   retrieveTab.addEventListener('click', () => {
-    retrieveTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
-    createTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+    retrieveTab.classList.add('text-gray-500', 'border-b-2', 'border-blue-600');
+    createTab.classList.remove('border-b-2', 'border-blue-600');
     retrieveForm.classList.remove('hidden');
     createForm.classList.add('hidden');
   });
