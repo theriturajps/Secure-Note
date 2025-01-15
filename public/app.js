@@ -72,7 +72,34 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('note-id').value = noteId;
       document.getElementById('retrieve-password').value = password;
       window.history.replaceState({}, '', window.location.pathname);
-      retrieveForm.dispatchEvent(new Event('submit'));
+      retrieveNote(noteId, password);
+    }
+  }
+
+  async function retrieveNote(noteId, password) {
+    try {
+      const response = await fetch('/api/notes/retrieve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ noteId, password })
+      });
+      const result = await response.json();
+
+      if (response.ok) {
+        noteContent.value = result.content;
+        noteContent.setAttribute('data-note-id', noteId);
+        noteContent.readOnly = true;
+        editBtn.classList.remove('hidden');
+        saveBtn.classList.add('hidden');
+        modal.classList.remove('hidden');
+
+        document.getElementById('note-id').value = '';
+        document.getElementById('retrieve-password').value = '';
+      } else {
+        showFeedback(result.error || 'Failed to retrieve note', 'error', 'retrieve');
+      }
+    } catch (error) {
+      showFeedback('Network error occurred', 'error', 'retrieve');
     }
   }
 
@@ -167,13 +194,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await response.json();
 
       if (response.ok) {
+        // Generate shareable link
         const shareableLink = `${window.location.origin}?noteId=${result.noteId}&password=${password}`;
 
+        // Create success message with copyable link
         const successMessage = `
-          <div class="mb-2">Note ID: ${result.noteId}</div>
+          <div class="mb-2">Note created! ID: ${result.noteId}</div>
           <div class="flex items-center space-x-2">
-            <input type="text" value="${shareableLink}" class="flex-1 p-1 text-sm border rounded dark:bg-gray-700" readonly>
-            <button onclick="navigator.clipboard.writeText('${shareableLink}')" class="p-1 text-sm bg-gray-100 rounded hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"><i class="fas fa-copy"></i></button>
+            <input type="text" value="${shareableLink}" 
+              class="flex-1 p-1 text-sm border rounded dark:bg-gray-700" readonly>
+            <button onclick="navigator.clipboard.writeText('${shareableLink}')"
+              class="p-1 text-sm bg-gray-100 rounded hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600">
+              <i class="fas fa-copy"></i>
+            </button>
           </div>`;
 
         showFeedback(successMessage, 'success', 'create');
@@ -190,28 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const noteId = document.getElementById('note-id').value.trim();
     const password = document.getElementById('retrieve-password').value.trim();
-
-    try {
-      const response = await fetch('/api/notes/retrieve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ noteId, password })
-      });
-      const result = await response.json();
-
-      if (response.ok) {
-        noteContent.value = result.content;
-        noteContent.setAttribute('data-note-id', noteId);
-        noteContent.readOnly = true;
-        editBtn.classList.remove('hidden');
-        saveBtn.classList.add('hidden');
-        modal.classList.remove('hidden');
-      } else {
-        showFeedback(result.error || 'Failed to retrieve note', 'error', 'retrieve');
-      }
-    } catch (error) {
-      showFeedback('Network error occurred', 'error', 'retrieve');
-    }
+    await retrieveNote(noteId, password);
   });
 
   editBtn.addEventListener('click', () => {
