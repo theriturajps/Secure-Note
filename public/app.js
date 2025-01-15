@@ -1,4 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Theme Toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const html = document.documentElement;
+
+  // Check for saved theme preference or default to light
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  html.className = savedTheme;
+
+  themeToggle.addEventListener('click', () => {
+    const newTheme = html.className === 'light' ? 'dark' : 'light';
+    html.className = newTheme;
+    localStorage.setItem('theme', newTheme);
+  });
+
   // DOM Elements
   const createTab = document.getElementById('create-tab');
   const retrieveTab = document.getElementById('retrieve-tab');
@@ -12,17 +26,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const deleteBtn = document.getElementById('delete-note-btn');
   const feedback = document.getElementById('feedback');
 
+  // Set initial active tab
+  createTab.classList.add('active');
+
   // Tab Switching
   createTab.addEventListener('click', () => {
-    createTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
-    retrieveTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+    createTab.classList.add('active');
+    retrieveTab.classList.remove('active');
     createForm.classList.remove('hidden');
     retrieveForm.classList.add('hidden');
   });
 
   retrieveTab.addEventListener('click', () => {
-    retrieveTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
-    createTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+    retrieveTab.classList.add('active');
+    createTab.classList.remove('active');
     retrieveForm.classList.remove('hidden');
     createForm.classList.add('hidden');
   });
