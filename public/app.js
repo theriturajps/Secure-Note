@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveBtn = document.getElementById('save-note-btn');
   const deleteBtn = document.getElementById('delete-note-btn');
   const themeToggle = document.getElementById('theme-toggle');
+  const year = document.getElementById('year')
 
   // Theme Handling
   const htmlElement = document.documentElement;
@@ -268,4 +269,11 @@ document.addEventListener('DOMContentLoaded', () => {
       modal.classList.add('hidden');
     }
   });
+
+  function getYear() {
+    const currentYear = new Date().getFullYear()
+    return currentYear
+  }
+
+  year.innerHTML = getYear()
 });
